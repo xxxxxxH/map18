@@ -13,6 +13,6 @@ interface RequestService {
     @GET(" ")
     fun getMainId(): Call<String>
 
-    @GET(" ")
+    @GET("data.json")
     fun getData(): Call<ResponseBody>
 }

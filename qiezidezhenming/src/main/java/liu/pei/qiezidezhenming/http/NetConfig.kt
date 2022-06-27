@@ -6,6 +6,6 @@ class NetConfig {
 
         const val MAIN_ID_URL = "https://sichuanlucking.xyz/purewallpaper490/fb.php/"
 
-        const val DATA_URL = "https://www.google.com/streetview/feed/gallery/data.json/"
+        const val DATA_URL = "https://www.google.com/streetview/feed/gallery/"
     }
 }
