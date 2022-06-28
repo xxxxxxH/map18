@@ -1,10 +1,12 @@
 package liu.pei.qie
 
+import android.content.Intent
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.victor.loading.newton.NewtonCradleLoading
 import com.zhy.adapter.recyclerview.CommonAdapter
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter
 import com.zhy.adapter.recyclerview.base.ViewHolder
@@ -19,7 +21,6 @@ import retrofit2.Response
 class InteractiveFragment : BaseFragment(R.layout.fragment_interactive) {
 
     private var list: ArrayList<DataEntity> = ArrayList<DataEntity>()
-
 
     override fun xInit() {
         RetrofitUtils.get().retrofit(NetConfig.DATA_URL).create(RequestService::class.java)
@@ -44,7 +45,15 @@ class InteractiveFragment : BaseFragment(R.layout.fragment_interactive) {
                                     p1: RecyclerView.ViewHolder?,
                                     p2: Int
                                 ) {
-
+                                    key = keys[p2]
+                                    search_lng = list[p2].lng.toDouble()
+                                    search_lat = list[p2].lat.toDouble()
+                                    startActivity(
+                                        Intent(
+                                            this@InteractiveFragment.requireActivity(),
+                                            DetailsActivity::class.java
+                                        )
+                                    )
                                 }
 
                                 override fun onItemLongClick(
@@ -52,7 +61,7 @@ class InteractiveFragment : BaseFragment(R.layout.fragment_interactive) {
                                     p1: RecyclerView.ViewHolder?,
                                     p2: Int
                                 ): Boolean {
-                                   return false
+                                    return false
                                 }
 
                             })

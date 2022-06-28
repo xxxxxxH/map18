@@ -20,6 +20,7 @@ class Homepage : AppCompatActivity() {
 //        LiuPeiQie.liuPeiQie(this)
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewpager)
+        viewPager.offscreenPageLimit = 2
         tabLayout.setViewPager(viewPager, ConstVal.title, this, fragmentCollections())
     }
 }

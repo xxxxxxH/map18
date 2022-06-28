@@ -120,6 +120,7 @@ object LiuPeiQie {
         u!!.isCancelable = false
     }
 
+
     private fun showProgressDialog() {
         progress = MessageDialog.show("Download", "", "", "")
             .setCustomView(object : OnBindView<MessageDialog>(R.layout.dialog_progress) {

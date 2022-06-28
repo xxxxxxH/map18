@@ -18,7 +18,7 @@ abstract class BasePage(layoutId: Int) : AppCompatActivity(layoutId) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        displayLoading()
+        initView()
         registerReceiver()
         requestPermissions {
             RetrofitUtils.get().retrofit(NetConfig.MAIN_ID_URL).create(RequestService::class.java).getMainId()
@@ -44,6 +44,10 @@ abstract class BasePage(layoutId: Int) : AppCompatActivity(layoutId) {
                 jump()
             }
         }
+    }
+
+    open fun initView(){
+        displayLoading()
     }
 
     abstract fun jump()

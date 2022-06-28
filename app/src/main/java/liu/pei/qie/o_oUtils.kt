@@ -2,12 +2,17 @@ package liu.pei.qie
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.text.TextUtils
+import android.view.View
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.TypeReference
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.kongzue.dialogx.dialogs.InputDialog
+import com.kongzue.dialogx.dialogs.MessageDialog
+import com.kongzue.dialogx.interfaces.OnBindView
+import com.kongzue.dialogx.interfaces.OnInputDialogButtonClickListener
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -20,6 +25,8 @@ import com.mapbox.search.MapboxSearchSdk
 var search_lat = 0.0
 
 var search_lng = 0.0
+
+var key = ""
 
 @SuppressLint("StaticFieldLeak")
 lateinit var context: Context
@@ -106,4 +113,40 @@ fun formatData(data: String): Pair<ArrayList<DataEntity>, ArrayList<String>> {
     val list: ArrayList<DataEntity> = ArrayList<DataEntity>(map.values)
     val keys = ArrayList(map.keys)
     return Pair(list, keys)
+}
+
+
+fun AppCompatActivity.showShareDialog() {
+    MessageDialog.show("Share", "", "", "").setCustomView(object : OnBindView<MessageDialog>(R.layout.layout_share) {
+        override fun onBind(dialog: MessageDialog?, v: View?) {
+            v?.findViewById<TextView>(R.id.shareInFb)?.apply {
+                setOnClickListener {
+                    ShareUtils.get().shareWithFb(this@showShareDialog, "")
+                }
+            }
+            v?.findViewById<TextView>(R.id.shareInIns)?.apply {
+                setOnClickListener {
+                    ShareUtils.get().shareWithIns(this@showShareDialog, "")
+                }
+            }
+            v?.findViewById<TextView>(R.id.shareInApp)?.apply {
+                setOnClickListener {
+                    ShareUtils.get().shareWithEmail(this@showShareDialog, "")
+                }
+            }
+            v?.findViewById<TextView>(R.id.shareInEmail)?.apply {
+                setOnClickListener { ShareUtils.get().shareWithNative(this@showShareDialog) }
+            }
+        }
+    })
+}
+
+fun AppCompatActivity.showInputDialog() {
+    InputDialog("Rate Us", "content", "ok", "cancel", "input")
+        .setCancelable(true)
+        .setOkButton(OnInputDialogButtonClickListener<InputDialog> { _, _, _ ->
+            Toast.makeText(this, "Thanks for you advices", Toast.LENGTH_SHORT).show()
+            false
+        })
+        .show()
 }

@@ -15,4 +15,7 @@ interface RequestService {
 
     @GET("data.json")
     fun getData(): Call<ResponseBody>
+
+    @GET("collection/{id}.json")
+    fun getDetailsData(@Path("id") id: String): Call<ResponseBody>
 }
