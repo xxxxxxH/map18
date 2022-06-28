@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import androidx.core.content.ContextCompat.startActivity
 import com.mapbox.search.ResponseInfo
 import com.mapbox.search.SearchMultipleSelectionCallback
 import com.mapbox.search.SearchOptions
@@ -14,7 +13,7 @@ import com.mapbox.search.SearchSuggestionsCallback
 import com.mapbox.search.result.SearchResult
 import com.mapbox.search.result.SearchSuggestion
 
-class NearItem : LinearLayout,SearchSuggestionsCallback, SearchMultipleSelectionCallback  {
+class NearItem : LinearLayout, SearchSuggestionsCallback, SearchMultipleSelectionCallback {
     constructor(context: Context) : super(context) {
         initView(context)
     }
@@ -34,12 +33,13 @@ class NearItem : LinearLayout,SearchSuggestionsCallback, SearchMultipleSelection
     private lateinit var imageView: ImageView
     private lateinit var textView: TextView
     private lateinit var root: RelativeLayout
-
+    lateinit var listener: NearItemClickListener
 
     private fun initView(context: Context): View {
         val v = LayoutInflater.from(context).inflate(R.layout.near_item, this, true)
         root = v.findViewById(R.id.root)
         root.setOnClickListener {
+            listener.startSearch()
             searchEngine.search(textView.text.toString(), SearchOptions(), this)
         }
         imageView = v.findViewById(R.id.icon)
@@ -57,6 +57,7 @@ class NearItem : LinearLayout,SearchSuggestionsCallback, SearchMultipleSelection
 
 
     override fun onSuggestions(suggestions: List<SearchSuggestion>, responseInfo: ResponseInfo) {
+        listener.endSearch()
         suggestions.firstOrNull()?.let {
             searchEngine.select(suggestions, this)
         } ?: kotlin.run {
@@ -69,6 +70,7 @@ class NearItem : LinearLayout,SearchSuggestionsCallback, SearchMultipleSelection
         results: List<SearchResult>,
         responseInfo: ResponseInfo
     ) {
+        listener.endSearch()
         results.firstOrNull()?.coordinate?.let {
             search_lat = it.latitude()
             search_lng = it.longitude()
@@ -79,6 +81,7 @@ class NearItem : LinearLayout,SearchSuggestionsCallback, SearchMultipleSelection
     }
 
     override fun onError(e: Exception) {
+        listener.endSearch()
         Toast.makeText(context, "no data", Toast.LENGTH_SHORT).show()
     }
 }

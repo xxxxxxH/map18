@@ -14,33 +14,53 @@ import org.greenrobot.eventbus.ThreadMode
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private lateinit var map: MapView
+    private val positionChangedListener by lazy {
+        map.getIndicatorListener()
+    }
+
+    private val onMoveListener = object : OnMoveListener {
+        override fun onMove(detector: MoveGestureDetector): Boolean {
+            return false
+        }
+
+        override fun onMoveBegin(detector: MoveGestureDetector) {
+
+        }
+
+        override fun onMoveEnd(detector: MoveGestureDetector) {
+
+        }
+
+    }
     override fun xInit() {
         EventBus.getDefault().register(this)
         map = layoutView.findViewById(R.id.map)
         map.getMapboxMap().setCamera(CameraOptions.Builder().zoom(14.0).build())
-        map.getMapboxMap().loadStyleUri(Style.MAPBOX_STREETS) {
-            val plugin = map.location
-            plugin.updateSettings {
-                this.enabled = true
+        when (MMKV.defaultMMKV().decodeInt("mapStyle", 0)) {
+            0 -> {
+                map.getMapboxMap().loadStyleUri(Style.OUTDOORS){
+                    map.initLocationComponent(positionChangedListener)
+                    map.addMoveListener(onMoveListener)
+                }
             }
-            plugin.addOnIndicatorPositionChangedListener {
-                map.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
-                map.gestures.focalPoint = map.getMapboxMap().pixelForCoordinate(it)
+            1 -> {
+                map.getMapboxMap().loadStyleUri(Style.SATELLITE_STREETS){
+                    map.initLocationComponent(positionChangedListener)
+                    map.addMoveListener(onMoveListener)
+                }
             }
-            map.gestures.addOnMoveListener(object : OnMoveListener {
-                override fun onMove(detector: MoveGestureDetector): Boolean {
-                    return false
+            2 -> {
+                map.getMapboxMap().loadStyleUri(Style.TRAFFIC_DAY){
+                    map.initLocationComponent(positionChangedListener)
+                    map.addMoveListener(onMoveListener)
                 }
-
-                override fun onMoveBegin(detector: MoveGestureDetector) {
-
+            }
+            3 -> {
+                map.getMapboxMap().loadStyleUri(Style.LIGHT){
+                    map.initLocationComponent(positionChangedListener)
+                    map.addMoveListener(onMoveListener)
                 }
-
-                override fun onMoveEnd(detector: MoveGestureDetector) {
-
-                }
-
-            })
+            }
         }
     }
 
@@ -52,7 +72,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onEvent(e:Event){
         if(e.getMessage()[0] == "styleChange"){
-            when (MMKV.defaultMMKV().decodeInt("mpaStyle", 0)) {
+            when (MMKV.defaultMMKV().decodeInt("mapStyle", 0)) {
                 0 -> {
                     map.getMapboxMap().loadStyleUri(Style.OUTDOORS)
                 }

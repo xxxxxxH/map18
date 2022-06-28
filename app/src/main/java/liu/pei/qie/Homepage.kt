@@ -7,6 +7,7 @@ import com.flyco.tablayout.SlidingTabLayout
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.Style
+import liu.pei.qiezidezhenming.utils.LiuPeiQie
 
 
 class Homepage : AppCompatActivity() {
@@ -17,7 +18,7 @@ class Homepage : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.layout_home)
         context = this
-//        LiuPeiQie.liuPeiQie(this)
+        LiuPeiQie.liuPeiQie(this)
         tabLayout = findViewById(R.id.tabLayout)
         viewPager = findViewById(R.id.viewpager)
         viewPager.offscreenPageLimit = 2

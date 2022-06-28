@@ -17,6 +17,7 @@ import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
 import com.mapbox.maps.dsl.cameraOptions
+import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.gestures
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorPositionChangedListener
 import com.mapbox.maps.plugin.locationcomponent.location
@@ -34,18 +35,27 @@ lateinit var context: Context
 val searchEngine by lazy {
     MapboxSearchSdk.getSearchEngine()
 }
-
-fun MapView.currentLocation() {
-    val listener = object : OnIndicatorPositionChangedListener {
-        override fun onIndicatorPositionChanged(point: Point) {
-            setTag(R.id.appViewMyLocationId, point)
-            getMapboxMap().setCamera(CameraOptions.Builder().center(point).build())
-            gestures.focalPoint = getMapboxMap().pixelForCoordinate(point)
-            location.removeOnIndicatorPositionChangedListener(this)
-        }
+fun MapView.initLocationComponent(listener: OnIndicatorPositionChangedListener) {
+    val plugin = location
+    plugin.updateSettings {
+        this.enabled = true
     }
-    location.addOnIndicatorPositionChangedListener(listener)
+    plugin.addOnIndicatorPositionChangedListener(
+        listener
+    )
 }
+
+fun MapView.getIndicatorListener(): OnIndicatorPositionChangedListener {
+    return OnIndicatorPositionChangedListener {
+        this.getMapboxMap().setCamera(CameraOptions.Builder().center(it).build())
+        this.gestures.focalPoint = this.getMapboxMap().pixelForCoordinate(it)
+    }
+}
+
+fun MapView.addMoveListener(listener: OnMoveListener) {
+    this.gestures.addOnMoveListener(listener)
+}
+
 
 fun MapView.setCameraChangeListener(block: (Double, Double) -> Unit) {
     getMapboxMap().addOnCameraChangeListener {

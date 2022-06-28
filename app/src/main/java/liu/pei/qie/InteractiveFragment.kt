@@ -2,6 +2,7 @@ package liu.pei.qie
 
 import android.content.Intent
 import android.view.View
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +22,10 @@ import retrofit2.Response
 class InteractiveFragment : BaseFragment(R.layout.fragment_interactive) {
 
     private var list: ArrayList<DataEntity> = ArrayList<DataEntity>()
-
+    private lateinit var loadingView: RelativeLayout
     override fun xInit() {
+        loadingView = layoutView.findViewById(R.id.loading)
+        loadingView.visibility = View.VISIBLE
         RetrofitUtils.get().retrofit(NetConfig.DATA_URL).create(RequestService::class.java)
             .getData().enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(
@@ -67,15 +70,16 @@ class InteractiveFragment : BaseFragment(R.layout.fragment_interactive) {
                             })
                         }
                     }
+                    loadingView.visibility = View.GONE
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    loadingView.visibility = View.GONE
                     Toast.makeText(
                         this@InteractiveFragment.requireActivity(),
                         "no data",
                         Toast.LENGTH_SHORT
                     ).show()
-                    this@InteractiveFragment.requireActivity().finish()
                 }
 
             })

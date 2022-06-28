@@ -3,6 +3,7 @@ package liu.pei.qie
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
+import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,6 +18,7 @@ import com.mapbox.maps.plugin.annotation.AnnotationConfig
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
+import com.mingle.widget.LoadingView
 import com.zhy.adapter.recyclerview.CommonAdapter
 import com.zhy.adapter.recyclerview.MultiItemTypeAdapter
 import com.zhy.adapter.recyclerview.base.ViewHolder
@@ -31,10 +33,13 @@ import retrofit2.Response
 class DetailsActivity : AppCompatActivity() {
     private var list: ArrayList<DataEntity> = ArrayList<DataEntity>()
     private lateinit var mapView: MapView
+    private lateinit var loadingView: RelativeLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
         mapView = findViewById<MapView>(R.id.map)
+        loadingView = findViewById(R.id.loading)
+        loadingView.visibility = View.VISIBLE
         mapView.let {
             it.getMapboxMap().apply {
                 flyTo(cameraOptions {
@@ -112,9 +117,11 @@ class DetailsActivity : AppCompatActivity() {
                             })
                         }
                     }
+                    loadingView.visibility = View.GONE
                 }
 
                 override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    loadingView.visibility = View.GONE
                     Toast.makeText(
                         this@DetailsActivity,
                         "no data",

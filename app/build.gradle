@@ -61,4 +61,5 @@ dependencies {
     implementation 'com.github.iielse:switchbutton:1.0.4'
     implementation 'org.greenrobot:eventbus:3.3.1'
     implementation 'com.victor:lib:1.0.4'
+    implementation 'com.github.zzz40500:android-shapeLoadingView:1.0.3.2'
 }
