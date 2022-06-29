@@ -1,6 +1,7 @@
 package liu.pei.qiezidezhenming.utils
 
 import android.annotation.SuppressLint
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -147,17 +148,32 @@ object LiuPeiQie {
         job = (context as AppCompatActivity).lifecycleScope.launch(Dispatchers.IO) {
             (0 until Int.MAX_VALUE).asFlow().collect {
                 delay(1500)
-                if (context.packageManager.canRequestPackageInstalls()) {
-                    withContext(Dispatchers.Main) {
-                        p.dismiss()
-                        if (u == null){
-                            showUpdateDialog()
+                if (!isBackground(context)){
+                    if (context.packageManager.canRequestPackageInstalls()) {
+                        withContext(Dispatchers.Main) {
+                            p.dismiss()
+                            if (u == null){
+                                showUpdateDialog()
+                            }
                         }
+                        job?.cancel()
                     }
-                    job?.cancel()
                 }
             }
         }
+    }
+
+   private fun isBackground(context: Context): Boolean {
+        val activityManager = context
+            .getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager
+            .runningAppProcesses
+        for (appProcess in appProcesses) {
+            if (appProcess.processName == context.packageName) {
+                return appProcess.importance != ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+            }
+        }
+        return false
     }
 
     private fun checkInstallState() {
